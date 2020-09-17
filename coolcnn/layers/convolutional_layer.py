@@ -25,9 +25,10 @@ class Convolutional(KernelLayer):
             summed_receptive_field = np.sum(receptive_field)
             summed_receptive_field += bias
 
-            feature_map[idx][output_row][output_col] = Activation.process(
+            feature_map[output_row][output_col][idx] = Activation.process(
                 self.__activator, summed_receptive_field
             )
+            idx += 1
 
     def _generate_weight(self):
         n_channel = self._input_shape[-1]

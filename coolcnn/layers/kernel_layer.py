@@ -49,7 +49,7 @@ class KernelLayer(BaseLayer):
         row_size = (input_size[0] - kernel_size[0]) // h_strides + 1
         col_size = (input_size[1] - kernel_size[1]) // w_strides + 1
 
-        feature_map = np.zeros((self._n_kernel, row_size, col_size))
+        feature_map = np.zeros((row_size, col_size, self._n_kernel))
 
         for output_row in range(row_size):
             for output_col in range(col_size):

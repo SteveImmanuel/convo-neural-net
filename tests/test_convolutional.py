@@ -30,17 +30,17 @@ def test_convolution_1():
 
     result = conv_layer.process(input_layer)
 
-    assert result.shape == (1, 3, 3)
+    assert result.shape == (3, 3, 1)
     assert result.ndim == 3
     assert result[0][0][0] == 1
-    assert result[0][0][1] == 5
-    assert result[0][0][2] == 6
-    assert result[0][1][0] == 7
-    assert result[0][1][1] == 8
-    assert result[0][1][2] == 3
-    assert result[0][2][0] == 3
-    assert result[0][2][1] == 10
-    assert result[0][2][2] == 4
+    assert result[0][1][0] == 5
+    assert result[0][2][0] == 6
+    assert result[1][0][0] == 7
+    assert result[1][1][0] == 8
+    assert result[1][2][0] == 3
+    assert result[2][0][0] == 3
+    assert result[2][1][0] == 10
+    assert result[2][2][0] == 4
 
 
 def test_convolution_2():
@@ -67,17 +67,17 @@ def test_convolution_2():
 
     result = conv_layer.process(input_layer)
 
-    assert result.shape == (1, 3, 3)
+    assert result.shape == (3, 3, 1)
     assert result.ndim == 3
     assert result[0][0][0] == 44
-    assert result[0][0][1] == 284
-    assert result[0][0][2] == 536
-    assert result[0][1][0] == 74
-    assert result[0][1][1] == 424
-    assert result[0][1][2] == 542
-    assert result[0][2][0] == 107
-    assert result[0][2][1] == 525
-    assert result[0][2][2] == 494
+    assert result[0][1][0] == 284
+    assert result[0][2][0] == 536
+    assert result[1][0][0] == 74
+    assert result[1][1][0] == 424
+    assert result[1][2][0] == 542
+    assert result[2][0][0] == 107
+    assert result[2][1][0] == 525
+    assert result[2][2][0] == 494
 
 
 def test_convolution_3():
@@ -104,17 +104,17 @@ def test_convolution_3():
 
     result = conv_layer.process(input_layer)
 
-    assert result.shape == (1, 3, 3)
+    assert result.shape == (3, 3, 1)
     assert result.ndim == 3
     assert result[0][0][0] == 0
-    assert result[0][0][1] == 0
-    assert result[0][0][2] == 0
     assert result[0][1][0] == 0
-    assert result[0][1][1] == 0
-    assert result[0][1][2] == 0
     assert result[0][2][0] == 0
-    assert result[0][2][1] == 0
-    assert result[0][2][2] == 0
+    assert result[1][0][0] == 0
+    assert result[1][1][0] == 0
+    assert result[1][2][0] == 0
+    assert result[2][0][0] == 0
+    assert result[2][1][0] == 0
+    assert result[2][2][0] == 0
 
 
 def test_convolution_image():
