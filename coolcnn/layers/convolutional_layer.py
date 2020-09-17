@@ -42,3 +42,7 @@ class Convolutional(KernelLayer):
 
         self._weights = np.reshape(self._weights, (self._n_kernel, row, col, n_channel))
         self._bias = np.random.rand(self._n_kernel)
+
+    def _get_trainable_params(self) -> int:
+        trainable_params = np.prod(self._weights.shape) + np.prod(self._bias.shape)
+        return trainable_params

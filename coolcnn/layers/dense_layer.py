@@ -32,3 +32,6 @@ class Dense(BaseLayer):
 
     def _get_output_shape(self) -> Tuple:
         return (self.__n_nodes, )
+
+    def _get_trainable_params(self) -> int:
+        return (self._input_shape[0] + 1) * self.__n_nodes

@@ -20,6 +20,24 @@ class Sequential():
             layer.input_shape = input_shape
             input_shape = layer.output_shape
 
+    def summary(self):
+        if not self._compiled:
+            raise RuntimeError('Error, please compile model first')
+
+        total = 0
+        for idx, layer in enumerate(self._layers):
+            print(
+                '{:<5}{:<20}Output Shape: {:<20}Trainable Params: {:<20}'.format(
+                    str(idx) + '.',
+                    type(layer).__name__,
+                    str(layer.output_shape),
+                    layer.trainable_params,
+                )
+            )
+            total += layer.trainable_params
+        print('=' * 92)
+        print('Total trainable params:', total)
+
     def run(self, input_array: ndarray) -> ndarray:
         if not self._compiled:
             raise RuntimeError('Error, please compile model first')

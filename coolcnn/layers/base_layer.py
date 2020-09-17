@@ -45,3 +45,10 @@ class BaseLayer(ABC):
     @abstractmethod
     def _get_output_shape(self) -> Tuple:
         pass
+
+    @property
+    def trainable_params(self) -> int:
+        return self._get_trainable_params()
+
+    def _get_trainable_params(self) -> int:
+        return 0
