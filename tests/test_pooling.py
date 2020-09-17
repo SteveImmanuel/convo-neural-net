@@ -15,7 +15,8 @@ def test_pooling_1():
         ]
     )
 
-    layer = Pooling(kernel_shape=2, strides=2, input_shape=(4, 4, 1))
+    layer = Pooling(kernel_shape=2, strides=2)
+    layer.input_shape = input_array.shape
 
     result = layer.process(input_array)
 
@@ -36,7 +37,8 @@ def test_pooling_2():
         ]
     )
 
-    layer = Pooling(kernel_shape=2, strides=2, input_shape=(4, 4, 1), mode=PoolMode.AVG)
+    layer = Pooling(kernel_shape=2, strides=2, mode=PoolMode.AVG)
+    layer.input_shape = input_array.shape
 
     result = layer.process(input_array)
 
@@ -62,7 +64,8 @@ def test_pooling_3():
         [[6, 4], [4.5, 7]],
     ])
 
-    layer = Pooling(kernel_shape=2, strides=2, input_shape=(4, 4, 2), mode=PoolMode.AVG)
+    layer = Pooling(kernel_shape=2, strides=2, mode=PoolMode.AVG)
+    layer.input_shape = input_array.shape
 
     result = layer.process(input_array)
 
@@ -85,7 +88,8 @@ def test_pooling_4():
         [[8, 5], [6, 14]],
     ])
 
-    layer = Pooling(kernel_shape=2, strides=2, input_shape=(4, 4, 2))
+    layer = Pooling(kernel_shape=2, strides=2)
+    layer.input_shape = input_array.shape
 
     result = layer.process(input_array)
 

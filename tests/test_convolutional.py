@@ -121,6 +121,7 @@ def test_convolution_image():
     conv_layer = Convolutional(
         n_kernel=1, kernel_shape=100, strides=50, padding=0, input_shape=input_layer.shape
     )
+    conv_layer._generate_weight()
 
     result = conv_layer.process(input_layer)
     assert result.ndim == 3

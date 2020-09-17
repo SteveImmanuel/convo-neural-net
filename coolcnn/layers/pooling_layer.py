@@ -16,7 +16,6 @@ class Pooling(KernelLayer):
     def __init__(self, mode: PoolMode = PoolMode.MAX, **kwargs) -> None:
         super().__init__(n_kernel=1, **kwargs)
         self.__mode = mode
-        self._n_kernel = self._input_shape[-1]
 
     def _on_receptive_field(
         self,
@@ -33,3 +32,6 @@ class Pooling(KernelLayer):
             else:
                 value = channel_matrix.mean()
             feature_map[output_row][output_col][idx] = value
+
+    def _generate_weight(self):
+        self._n_kernel = self._input_shape[-1]

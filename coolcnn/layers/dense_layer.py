@@ -3,6 +3,7 @@ from nptyping import ndarray
 
 from coolcnn.activation import *
 from coolcnn.layers.base_layer import BaseLayer
+from typing import Tuple
 
 
 class Dense(BaseLayer):
@@ -10,8 +11,6 @@ class Dense(BaseLayer):
         super().__init__(**kwargs)
         self.__n_nodes = n_nodes
         self.__activator = activator
-
-        self._generate_weight()
 
     def _validate_weight(self):
         return True
@@ -30,3 +29,6 @@ class Dense(BaseLayer):
         )
 
         self._bias = 0
+
+    def _get_output_shape(self) -> Tuple:
+        return (self.__n_nodes, )

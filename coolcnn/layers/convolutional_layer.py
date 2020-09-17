@@ -8,12 +8,9 @@ from coolcnn.layers.kernel_layer import KernelLayer
 
 
 class Convolutional(KernelLayer):
-    def __init__(self,
-                 activator: ActivationType = ActivationType.RELU,
-                 **kwargs) -> None:
+    def __init__(self, activator: ActivationType = ActivationType.RELU, **kwargs) -> None:
         super().__init__(**kwargs)
         self.__activator = activator
-        self._generate_weight()
 
     def _on_receptive_field(
         self,
@@ -29,19 +26,19 @@ class Convolutional(KernelLayer):
             summed_receptive_field += bias
 
             feature_map[output_row][output_col][idx] = Activation.process(
-                self.__activator, summed_receptive_field)
+                self.__activator, summed_receptive_field
+            )
             idx += 1
 
     def _generate_weight(self):
         n_channel = self._input_shape[-1]
-        w, h = self._kernel_shape
+        row, col = self._kernel_shape
 
-        total_filter_element = w * h * n_channel
+        total_filter_element = row * col * n_channel
         self._weights = np.array([], dtype=float)
         for i in range(self._n_kernel):
             random_weight = np.random.rand(total_filter_element)
             self._weights = np.concatenate((self._weights, random_weight))
 
-        self._weights = np.reshape(self._weights,
-                                   (self._n_kernel, w, h, n_channel))
+        self._weights = np.reshape(self._weights, (self._n_kernel, row, col, n_channel))
         self._bias = np.random.rand(self._n_kernel)

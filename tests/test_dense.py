@@ -7,7 +7,9 @@ from coolcnn.layers import Dense
 def test_dense_1():
     input_layer = np.array([1, 2, 3, 4, 5, 6, 7])
 
-    layer = Dense(n_nodes=3, input_shape=input_layer.shape)
+    layer = Dense(n_nodes=3)
+    layer.input_shape = input_layer.shape
+    layer._generate_weight()
 
     result = layer.process(input_layer)
 
@@ -19,7 +21,8 @@ def test_dense_2():
 
     output_layer = np.array([24, 0, 23])
 
-    layer = Dense(n_nodes=3, activator=ActivationType.RELU, input_shape=input_layer.shape)
+    layer = Dense(n_nodes=3, activator=ActivationType.RELU)
+    layer.input_shape = input_layer.shape
     layer._weights = np.array([[1, 2, 3], [-3, -2, 1], [1, 3, 2]])
     layer._bias = 1
 
@@ -41,7 +44,8 @@ def test_dense_3():
         )
     )
 
-    layer = Dense(n_nodes=3, input_shape=input_layer.shape)
+    layer = Dense(n_nodes=3)
+    layer.input_shape = input_layer.shape
     layer._weights = np.array([[0.1, 0.2, 0.3], [-0.3, -0.2, 0.1], [0.1, 0.3, 0.2]])
     layer._bias = 1
 
