@@ -26,7 +26,7 @@ def test_convolution_1():
         [[1], [0], [0]],
         [[0], [1], [1]],
     ]])
-    conv_layer._Convolutional__bias = [0]
+    conv_layer._bias = [0]
 
     result = conv_layer.process(input_layer)
 
@@ -63,7 +63,7 @@ def test_convolution_2():
         [[1], [0], [-1]],
         [[1], [0], [-1]],
     ]])
-    conv_layer._Convolutional__bias = [0]
+    conv_layer._bias = [0]
 
     result = conv_layer.process(input_layer)
 
@@ -100,7 +100,7 @@ def test_convolution_3():
         [[-1], [0], [-2]],
         [[-1], [0], [-2]],
     ]])
-    conv_layer._Convolutional__bias = [0]
+    conv_layer._bias = [0]
 
     result = conv_layer.process(input_layer)
 
