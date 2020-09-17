@@ -59,19 +59,18 @@ class KernelLayer(BaseLayer):
                 receptive_field = padded_input[anchor_top:anchor_top + kernel_size[0],
                                                anchor_left:anchor_left + kernel_size[1]].copy()
 
-                idx = 0
-                for kernel, bias in zip(self._weights, self._bias):
-                    receptive_field *= kernel
-                    summed_receptive_field = np.sum(receptive_field)
-                    summed_receptive_field += bias
+                self._on_receptive_field(receptive_field, feature_map, output_row, output_col)
 
-                    feature_map[idx][output_row][output_col] = self._on_feature_map_entry(
-                        summed_receptive_field
-                    )
         return feature_map
 
-    def _on_feature_map_entry(self, value: float) -> float:
-        return value
+    def _on_receptive_field(
+        self,
+        receptive_field: ndarray,
+        feature_map: ndarray,
+        output_row: int,
+        output_col: int,
+    ) -> None:
+        pass
 
     def _validate_weight(self) -> bool:
         return True

@@ -12,8 +12,22 @@ class Convolutional(KernelLayer):
         super().__init__(**kwargs)
         self.__activator = activator
 
-    def _on_feature_map_entry(self, value: float) -> float:
-        return Activation.process(self.__activator, value)
+    def _on_receptive_field(
+        self,
+        receptive_field: ndarray,
+        feature_map: ndarray,
+        output_row: int,
+        output_col: int,
+    ) -> None:
+        idx = 0
+        for kernel, bias in zip(self._weights, self._bias):
+            receptive_field *= kernel
+            summed_receptive_field = np.sum(receptive_field)
+            summed_receptive_field += bias
+
+            feature_map[idx][output_row][output_col] = Activation.process(
+                self.__activator, summed_receptive_field
+            )
 
     def _generate_weight(self):
         n_channel = self._input_shape[-1]
