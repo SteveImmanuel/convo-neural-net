@@ -126,3 +126,34 @@ def test_convolution_image():
 
     result = conv_layer.process(input_layer)
     assert result.ndim == 3
+
+
+def test_convolution_4():
+    input_layer = np.array(
+        [
+            [[2], [2], [3], [3], [3]],
+            [[0], [1], [3], [0], [3]],
+            [[2], [3], [0], [1], [3]],
+            [[3], [3], [2], [1], [2]],
+            [[3], [3], [0], [2], [3]],
+        ]
+    )
+
+    output_array = np.zeros((3, 3, 1))
+
+    conv_layer = Convolutional(
+        n_kernel=1, kernel_shape=3, strides=1, padding=0, input_shape=(5, 5, 1)
+    )
+
+    conv_layer._weights = np.array([[
+        [[-1], [0], [-2]],
+        [[-1], [0], [-2]],
+        [[-1], [0], [-2]],
+    ]])
+    conv_layer._bias = [0]
+
+    result = conv_layer.process(input_layer)
+
+    assert result.shape == (3, 3, 1)
+    assert result.ndim == 3
+    assert np.all(result == output_array)
