@@ -28,7 +28,7 @@ class Sequential():
         for idx, layer in enumerate(self._layers):
             print(
                 '{:<5}{:<20}Output Shape: {:<20}Trainable Params: {:<20}'.format(
-                    str(idx) + '.',
+                    str(idx + 1) + '.',
                     type(layer).__name__,
                     str(layer.output_shape),
                     layer.trainable_params,
