@@ -4,7 +4,7 @@ from typing import Tuple
 
 
 class BaseLayer(ABC):
-    def __init__(self, input_shape: Tuple[int, int, int]) -> None:
+    def __init__(self, input_shape: Tuple[int, int, int] = None) -> None:
         self._input_shape = input_shape  # (w, h, c)
 
     @abstractmethod
