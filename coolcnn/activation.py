@@ -5,6 +5,7 @@ import math
 class ActivationType(Enum):
     RELU = 'relu'
     SIGMOID = 'sigmoid'
+    NONE = 'none'
 
 
 class Activation():
