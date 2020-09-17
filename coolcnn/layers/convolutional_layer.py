@@ -1,4 +1,6 @@
 from coolcnn.layers.base_layer import BaseLayer
+from coolcnn.activation import *
+
 from nptyping import ndarray
 from typing import Union, Tuple, List
 
@@ -12,6 +14,7 @@ class Convolutional(BaseLayer):
         kernel_shape: Union[int, Tuple[int, int]],
         strides: Union[int, Tuple[int, int]] = (1, 1),
         padding: int = 0,
+        activator: ActivationType = ActivationType.RELU,
         **kwargs
     ) -> None:
         super().__init__(**kwargs)
@@ -23,6 +26,7 @@ class Convolutional(BaseLayer):
         if isinstance(strides, int):
             strides = (strides, strides)
         self.__strides = strides
+        self.__activator = activator
 
         self.generate_weight()
 
@@ -61,7 +65,9 @@ class Convolutional(BaseLayer):
                     summed_receptive_field = np.sum(receptive_field)
                     summed_receptive_field += bias
 
-                    feature_map[idx][output_row][output_col] = summed_receptive_field
+                    feature_map[idx][output_row][output_col] = Activation.process(
+                        self.__activator, summed_receptive_field
+                    )
         return feature_map
 
     def _validate_weight(self):
