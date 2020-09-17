@@ -1,6 +1,6 @@
-from coolcnn.layers.base_layer import BaseLayer
-
 from nptyping import ndarray
+
+from coolcnn.layers.base_layer import BaseLayer
 
 
 class Flatten(BaseLayer):

@@ -1,10 +1,10 @@
-from coolcnn.layers.kernel_layer import KernelLayer
 from enum import Enum
-from typing import Union, Tuple, List
-
-from nptyping import ndarray
+from typing import List, Tuple, Union
 
 import numpy as np
+from nptyping import ndarray
+
+from coolcnn.layers.kernel_layer import KernelLayer
 
 
 class PoolMode(Enum):

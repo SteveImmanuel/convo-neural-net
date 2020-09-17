@@ -1,21 +1,19 @@
-from coolcnn.layers.base_layer import BaseLayer
 from abc import abstractmethod
-
-from nptyping import ndarray
-from typing import Union, Tuple, List
+from typing import List, Tuple, Union
 
 import numpy as np
+from nptyping import ndarray
+
+from coolcnn.layers.base_layer import BaseLayer
 
 
 class KernelLayer(BaseLayer):
-    def __init__(
-        self,
-        n_kernel: int,
-        kernel_shape: Union[int, Tuple[int, int]],
-        strides: Union[int, Tuple[int, int]] = (1, 1),
-        padding: int = 0,
-        **kwargs
-    ) -> None:
+    def __init__(self,
+                 n_kernel: int,
+                 kernel_shape: Union[int, Tuple[int, int]],
+                 strides: Union[int, Tuple[int, int]] = (1, 1),
+                 padding: int = 0,
+                 **kwargs) -> None:
         super().__init__(**kwargs)
         if isinstance(strides, int):
             strides = (strides, strides)
@@ -54,13 +52,17 @@ class KernelLayer(BaseLayer):
                 anchor_left = output_col * w_strides
                 anchor_top = output_row * h_strides
 
-                receptive_field = padded_input[anchor_top:anchor_top + kernel_size[0],
-                                               anchor_left:anchor_left + kernel_size[1]].copy()
+                receptive_field = padded_input[anchor_top:anchor_top +
+                                               kernel_size[0],
+                                               anchor_left:anchor_left +
+                                               kernel_size[1]].copy()
 
-                self._on_receptive_field(receptive_field, feature_map, output_row, output_col)
+                self._on_receptive_field(receptive_field, feature_map,
+                                         output_row, output_col)
 
         return feature_map
 
+    @abstractmethod
     def _on_receptive_field(
         self,
         receptive_field: ndarray,

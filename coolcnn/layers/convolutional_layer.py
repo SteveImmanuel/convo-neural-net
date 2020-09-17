@@ -1,14 +1,16 @@
-from coolcnn.layers.kernel_layer import KernelLayer
-from coolcnn.activation import *
-
-from nptyping import ndarray
-from typing import Union, Tuple, List
+from typing import List, Tuple, Union
 
 import numpy as np
+from nptyping import ndarray
+
+from coolcnn.activation import *
+from coolcnn.layers.kernel_layer import KernelLayer
 
 
 class Convolutional(KernelLayer):
-    def __init__(self, activator: ActivationType = ActivationType.RELU, **kwargs) -> None:
+    def __init__(self,
+                 activator: ActivationType = ActivationType.RELU,
+                 **kwargs) -> None:
         super().__init__(**kwargs)
         self.__activator = activator
         self._generate_weight()
@@ -27,8 +29,7 @@ class Convolutional(KernelLayer):
             summed_receptive_field += bias
 
             feature_map[output_row][output_col][idx] = Activation.process(
-                self.__activator, summed_receptive_field
-            )
+                self.__activator, summed_receptive_field)
             idx += 1
 
     def _generate_weight(self):
@@ -41,5 +42,6 @@ class Convolutional(KernelLayer):
             random_weight = np.random.rand(total_filter_element)
             self._weights = np.concatenate((self._weights, random_weight))
 
-        self._weights = np.reshape(self._weights, (self._n_kernel, w, h, n_channel))
+        self._weights = np.reshape(self._weights,
+                                   (self._n_kernel, w, h, n_channel))
         self._bias = np.random.rand(self._n_kernel)

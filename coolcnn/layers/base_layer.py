@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
-from nptyping import ndarray
 from typing import Tuple
+
+from nptyping import ndarray
 
 
 class BaseLayer(ABC):
