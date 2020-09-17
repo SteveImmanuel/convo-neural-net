@@ -16,6 +16,7 @@ class Pooling(KernelLayer):
     def __init__(self, mode: PoolMode = PoolMode.MAX, **kwargs) -> None:
         super().__init__(n_kernel=1, **kwargs)
         self.__mode = mode
+        self._n_kernel = self._input_shape[-1]
 
     def _on_receptive_field(
         self,

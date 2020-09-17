@@ -2,6 +2,8 @@ from coolcnn.layers import Pooling, PoolMode
 
 import numpy as np
 
+from unittest import TestCase
+
 
 def test_pooling_1():
     input_array = np.array(
@@ -43,3 +45,49 @@ def test_pooling_2():
     assert result[0][1][0] == 3
     assert result[1][0][0] == 6
     assert result[1][1][0] == 4.5
+
+
+def test_pooling_3():
+    input_array = np.array(
+        [
+            [[1, 2], [1, 2], [2, 3], [2, 3]],
+            [[9, 2], [9, 2], [4, 2], [4, 2]],
+            [[4, 3], [8, 3], [3, 5], [6, 5]],
+            [[8, 5], [4, 5], [3, 9], [6, 9]],
+        ]
+    )
+
+    output_array = np.array([
+        [[5, 2], [3, 2.5]],
+        [[6, 4], [4.5, 7]],
+    ])
+
+    layer = Pooling(kernel_shape=2, strides=2, input_shape=(4, 4, 2), mode=PoolMode.AVG)
+
+    result = layer.process(input_array)
+
+    assert result.shape == (2, 2, 2)
+    assert np.all(result == output_array)
+
+
+def test_pooling_4():
+    input_array = np.array(
+        [
+            [[1, 2], [1, 2], [2, 3], [2, 3]],
+            [[9, 2], [9, 2], [4, 2], [4, 1]],
+            [[4, 3], [8, 3], [3, 11], [6, 12]],
+            [[8, 5], [4, 5], [3, 14], [6, 13]],
+        ]
+    )
+
+    output_array = np.array([
+        [[9, 2], [4, 3]],
+        [[8, 5], [6, 14]],
+    ])
+
+    layer = Pooling(kernel_shape=2, strides=2, input_shape=(4, 4, 2))
+
+    result = layer.process(input_array)
+
+    assert result.shape == (2, 2, 2)
+    assert np.all(result == output_array)
