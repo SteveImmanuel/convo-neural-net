@@ -11,6 +11,7 @@ class Convolutional(KernelLayer):
     def __init__(self, activator: ActivationType = ActivationType.RELU, **kwargs) -> None:
         super().__init__(**kwargs)
         self.__activator = activator
+        self._generate_weight()
 
     def _on_receptive_field(
         self,

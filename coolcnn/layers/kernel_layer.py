@@ -28,8 +28,6 @@ class KernelLayer(BaseLayer):
         self._strides = strides
         self._bias = np.zeros(self._n_kernel)
 
-        self._generate_weight()
-
     def _add_padding(self, arr: ndarray) -> ndarray:
         return np.pad(arr, self._padding)
 
@@ -74,7 +72,3 @@ class KernelLayer(BaseLayer):
 
     def _validate_weight(self) -> bool:
         return True
-
-    @abstractmethod
-    def _generate_weight(self) -> None:
-        pass
