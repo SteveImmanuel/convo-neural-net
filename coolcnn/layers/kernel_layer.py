@@ -31,13 +31,21 @@ class KernelLayer(BaseLayer):
         elif input_layer.ndim != 3:
             raise ValueError('Invalid input layer')
 
+        row_size, col_size, _ = self.output_shape
+
+        feature_map = np.zeros((row_size, col_size, self._n_kernel))
+
+        for receptive_field, output_row, output_col in self._gen_receptive_field(input_layer):
+            self._on_receptive_field(receptive_field, feature_map, output_row, output_col)
+
+        return feature_map
+
+    def _gen_receptive_field(self, input_layer: ndarray):
         padded_input = self._add_padding(input_layer)
 
         w_strides, h_strides = self._strides
         kernel_size = self._kernel_shape
         row_size, col_size, _ = self.output_shape
-
-        feature_map = np.zeros((row_size, col_size, self._n_kernel))
 
         for output_row in range(row_size):
             for output_col in range(col_size):
@@ -45,10 +53,7 @@ class KernelLayer(BaseLayer):
                 anchor_top = output_row * h_strides
 
                 receptive_field = padded_input[anchor_top:anchor_top + kernel_size[0], anchor_left:anchor_left + kernel_size[1]].copy()
-
-                self._on_receptive_field(receptive_field, feature_map, output_row, output_col)
-
-        return feature_map
+                yield receptive_field, output_row, output_col
 
     @abstractmethod
     def _on_receptive_field(

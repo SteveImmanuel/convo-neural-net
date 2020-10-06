@@ -18,36 +18,30 @@ class Pooling(KernelLayer):
         self.__mode = mode
 
     def backpropagate(self, input_layer: ndarray, output_layer: ndarray, d_error_d_out: ndarray) -> ndarray:
-        padded_input = self._add_padding(input_layer)
-
-        w_strides, h_strides = self._strides
-        kernel_size = self._kernel_shape
-        row_size, col_size, _ = self.output_shape
-
         d_error_d_out_prev = np.zeros(input_layer.shape)
 
-        for output_row in range(row_size):
-            for output_col in range(col_size):
-                anchor_left = output_col * w_strides
-                anchor_top = output_row * h_strides
+        w_strides, h_strides = self._strides
 
-                receptive_field = padded_input[anchor_top:anchor_top + kernel_size[0], anchor_left:anchor_left + kernel_size[1]]
-                for idx in range(self._n_kernel):
-                    pool_idx = 0
-                    value = 0
+        for receptive_field, output_row, output_col in self._gen_receptive_field(input_layer):
+            anchor_left = output_col * w_strides
+            anchor_top = output_row * h_strides
 
-                    channel_matrix = receptive_field[:, :, idx]
-                    if self.__mode == PoolMode.MAX:
-                        pool_idx = np.argmax(channel_matrix)
-                        pool_idx_top, pool_idx_left = np.unravel_index(pool_idx, kernel_size)
-                        value = d_error_d_out[output_row][output_col][idx]
+            for idx in range(self._n_kernel):
+                pool_idx = 0
+                value = 0
 
-                        pool_idx_top += anchor_top
-                        pool_idx_left += anchor_left
-                    else:
-                        raise RuntimeError('Backprop not implemented for average mode')
+                channel_matrix = receptive_field[:, :, idx]
+                if self.__mode == PoolMode.MAX:
+                    pool_idx = np.argmax(channel_matrix)
+                    pool_idx_top, pool_idx_left = np.unravel_index(pool_idx, self._kernel_shape)
+                    value = d_error_d_out[output_row][output_col][idx]
 
-                    d_error_d_out_prev[pool_idx_top][pool_idx_left][idx] = value
+                    pool_idx_top += anchor_top
+                    pool_idx_left += anchor_left
+                else:
+                    raise RuntimeError('Backprop not implemented for average mode')
+
+                d_error_d_out_prev[pool_idx_top][pool_idx_left][idx] += value
 
         return d_error_d_out_prev
 
