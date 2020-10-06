@@ -8,14 +8,7 @@ from coolcnn.layers.base_layer import BaseLayer
 
 
 class KernelLayer(BaseLayer):
-    def __init__(
-        self,
-        n_kernel: int,
-        kernel_shape: Union[int, Tuple[int, int]],
-        strides: Union[int, Tuple[int, int]] = (1, 1),
-        padding: int = 0,
-        **kwargs
-    ) -> None:
+    def __init__(self, n_kernel: int, kernel_shape: Union[int, Tuple[int, int]], strides: Union[int, Tuple[int, int]] = (1, 1), padding: int = 0, **kwargs) -> None:
         super().__init__(**kwargs)
         if isinstance(strides, int):
             strides = (strides, strides)
@@ -51,8 +44,7 @@ class KernelLayer(BaseLayer):
                 anchor_left = output_col * w_strides
                 anchor_top = output_row * h_strides
 
-                receptive_field = padded_input[anchor_top:anchor_top + kernel_size[0],
-                                               anchor_left:anchor_left + kernel_size[1]].copy()
+                receptive_field = padded_input[anchor_top:anchor_top + kernel_size[0], anchor_left:anchor_left + kernel_size[1]].copy()
 
                 self._on_receptive_field(receptive_field, feature_map, output_row, output_col)
 
@@ -67,9 +59,6 @@ class KernelLayer(BaseLayer):
         output_col: int,
     ) -> None:
         pass
-
-    def _validate_weight(self) -> bool:
-        return True
 
     def _get_output_shape(self) -> Tuple:
         kernel_size = self._kernel_shape

@@ -35,12 +35,10 @@ class BaseLayer(ABC):
     def process(self, input_layer: ndarray) -> ndarray:
         pass
 
-    @abstractmethod
     def backpropagate(self, input_layer: ndarray, output_layer: ndarray, d_error_d_out: ndarray) -> ndarray:
         return d_error_d_out
 
-    @abstractmethod
-    def update_weight(self) -> None:
+    def update_weight(self, momentum: float, learning_rate: float) -> None:
         pass
 
     @property

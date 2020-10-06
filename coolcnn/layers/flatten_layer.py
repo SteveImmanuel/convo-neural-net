@@ -13,8 +13,5 @@ class Flatten(BaseLayer):
     def process(self, input_layer: ndarray) -> ndarray:
         return input_layer.flatten()
 
-    def _validate_weight(self) -> bool:
-        return True
-
     def _get_output_shape(self) -> Tuple:
         return (np.prod(self._input_shape), )
