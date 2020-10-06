@@ -21,7 +21,6 @@ class Dense(BaseLayer):
         return out_layer
 
     def update_weight(self, momentum: float, learning_rate: float) -> None:
-        print('delta:', self._weights_delta)
         self._weights = self._weights - learning_rate * self._weights_delta - momentum * self._prev_weights_delta
         self._prev_weights_delta = self._weights_delta
         self._weights_delta = np.zeros(self._weights.shape)
