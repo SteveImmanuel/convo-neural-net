@@ -1,5 +1,4 @@
 from typing import List, Tuple
-
 from nptyping import ndarray
 
 from coolcnn.layers.base_layer import BaseLayer
