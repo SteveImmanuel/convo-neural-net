@@ -7,10 +7,9 @@ from nptyping import ndarray
 class BaseLayer(ABC):
     def __init__(self, input_shape: Tuple = None) -> None:
         self._input_shape = input_shape  # (h, w, c)
-
-    @abstractmethod
-    def _validate_weight(self) -> bool:
-        pass
+        self._weights_delta = None
+        self._prev_weights_delta = None
+        self._activator = None
 
     @property
     def weight(self) -> ndarray:
@@ -18,9 +17,7 @@ class BaseLayer(ABC):
 
     @weight.setter
     def weight(self, new_weight: ndarray) -> None:
-        if (not self._validate_weight(new_weight)):
-            raise ValueError('Invalid weight input')
-        self._weights = weight
+        self._weights = new_weight
 
     @property
     def input_shape(self) -> Tuple:
@@ -36,6 +33,14 @@ class BaseLayer(ABC):
 
     @abstractmethod
     def process(self, input_layer: ndarray) -> ndarray:
+        pass
+
+    @abstractmethod
+    def backpropagate(self, input_layer: ndarray, output_layer: ndarray, d_error_d_out: ndarray) -> ndarray:
+        return d_error_d_out
+
+    @abstractmethod
+    def update_weight(self) -> None:
         pass
 
     @property

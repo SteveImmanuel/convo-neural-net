@@ -10,7 +10,7 @@ from coolcnn.layers.kernel_layer import KernelLayer
 class Convolutional(KernelLayer):
     def __init__(self, activator: ActivationType = ActivationType.RELU, **kwargs) -> None:
         super().__init__(**kwargs)
-        self.__activator = activator
+        self._activator = activator
 
     def _on_receptive_field(
         self,
@@ -26,7 +26,7 @@ class Convolutional(KernelLayer):
             summed_receptive_field += bias
 
             feature_map[output_row][output_col][idx] = Activation.process(
-                self.__activator, summed_receptive_field
+                self._activator, summed_receptive_field
             )
             idx += 1
 

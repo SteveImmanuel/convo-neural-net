@@ -9,6 +9,7 @@ class Sequential():
     def __init__(self, layers: List[BaseLayer] = []) -> None:
         self._layers = layers
         self._compiled = False
+        self._input_array_list = []
 
     def add_layer(self, layer: BaseLayer) -> None:
         self._layers.append(layer)
@@ -20,20 +21,43 @@ class Sequential():
             layer.input_shape = input_shape
             input_shape = layer.output_shape
 
+    def fit(
+        self,
+        input_array: ndarray,  # list of instance
+        result_array: ndarray,
+        epoch: int = 10,
+        mini_batch: int = 2,
+        learning_rate: float = 0.5,
+        momentum: float = 0,
+    ):
+        if not self._compiled:
+            raise RuntimeError('Error, please compile model first')
+
+        step = 0
+
+        while step < (epoch * len(input_array)):
+            data_idx = step % mini_batch
+            _ = self.run(input_array[data_idx])
+            self._backpropagate(result_array[data_idx])
+
+            if (step + 1) % mini_batch == 0:
+                # +1 because of mod and step start with 0
+                for layer in self._layers:
+                    layer.update_weight(momentum, learning_rate)
+            step += 1
+
     def summary(self):
         if not self._compiled:
             raise RuntimeError('Error, please compile model first')
 
         total = 0
         for idx, layer in enumerate(self._layers):
-            print(
-                '{:<5}{:<20}Output Shape: {:<20}Trainable Params: {:<20}'.format(
-                    str(idx + 1) + '.',
-                    type(layer).__name__,
-                    str(layer.output_shape),
-                    layer.trainable_params,
-                )
-            )
+            print('{:<5}{:<20}Output Shape: {:<20}Trainable Params: {:<20}'.format(
+                str(idx + 1) + '.',
+                type(layer).__name__,
+                str(layer.output_shape),
+                layer.trainable_params,
+            ))
             total += layer.trainable_params
         print('=' * 92)
         print('Total trainable params:', total)
@@ -43,6 +67,18 @@ class Sequential():
             raise RuntimeError('Error, please compile model first')
 
         for layer in self._layers:
+            self._input_array_list.append(input_array)
             input_array = layer.process(input_array)
 
+        self._input_array_list.append(input_array)
         return input_array
+
+    def _backpropagate(self, target_array: ndarray) -> None:
+        predicted_array = self._input_array_list[-1]
+        d_error_d_out = -(target_array - predicted_array)
+
+        for layer, input_array, output_array in zip(self._layers[::-1], self._input_array_list[-2::-1], self._input_array_list[::-1]):
+            # delta_weight = d_error_d_out * d_out_d_net *
+            d_error_d_out = layer.backpropagate(input_array, output_array, d_error_d_out)
+
+        self._input_array_list = []
