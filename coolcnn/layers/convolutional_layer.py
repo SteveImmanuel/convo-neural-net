@@ -22,7 +22,6 @@ class Convolutional(KernelLayer):
         bias = (n_kernel,)
         """
         d_error_d_net = Activation.differential(self._activator, output_layer) * d_error_d_out
-        # d_error_d_out_prev = np.zeros((*output_layer.shape[:-1], input_layer.shape[-1]))
         d_error_d_out_prev = np.zeros(input_layer.shape)
         d_error_d_out_prev = self._add_padding(d_error_d_out_prev)
         w_strides, h_strides = self._strides
@@ -34,29 +33,15 @@ class Convolutional(KernelLayer):
 
             kernel_w, kernel_h = self._kernel_shape
 
-            for idx in range(self._n_kernel):
-                d_error_d_in = self._weights[idx] * d_error_d_net[output_row, output_col, idx]
-                # print(d_error_d_in.shape)
-                # print(d_error_d_in)
-                # print(d_error_d_in.shape)
-                # print(d_error_d_out_prev[anchor_left:anchor_left + kernel_w, anchor_top:anchor_top + kernel_h, :].shape)
-                # print(anchor_left, kernel_w, anchor_top, kernel_h)
+            d_error_d_in = np.swapaxes((np.swapaxes(self._weights, 0, -1) * d_error_d_net[output_row, output_col]), 0, -1)
 
-                d_error_d_out_prev[anchor_left:anchor_left + kernel_w, anchor_top:anchor_top + kernel_h] += d_error_d_in
-                # print(receptive_field.shape)
-                # print(d_error_d_net[output_row, output_col, idx].shape)
-                # print(d_error_d_net[output_row, output_col, idx])
-                # print(self._weights_delta.shape)
+            d_error_d_out_prev[anchor_top:anchor_top + kernel_h, anchor_left:anchor_left + kernel_w] += np.sum(d_error_d_in, axis=0)
 
-                self._weights_delta[idx] += receptive_field * d_error_d_net[output_row, output_col, idx]
-                self._bias_delta[idx] += d_error_d_net[output_row, output_col, idx]
+            receptive_field_extended = np.repeat(receptive_field.reshape((*receptive_field.shape, 1)), self._n_kernel, axis=-1)
 
-                # receptive_field *= d_error_d_net[:, :, idx].reshape(d_error_d_net.shape[0], d_error_d_net.shape[1], 1)
-                # summed_receptive_field = np.sum(receptive_field, axis=(0, 1))
+            self._weights_delta += np.moveaxis(receptive_field_extended * d_error_d_net[output_row, output_col], -1, 0)
+            self._bias_delta += d_error_d_net[output_row, output_col]
 
-                # self._weights_delta[idx][output_row][output_col] = summed_receptive_field
-
-        # print(d_error_d_out_prev.shape)
         if self._padding == 0:
             return d_error_d_out_prev
         else:
