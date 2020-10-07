@@ -1,5 +1,6 @@
 from typing import List, Tuple
 from nptyping import ndarray
+import numpy as np
 
 from coolcnn.layers.base_layer import BaseLayer
 
@@ -35,11 +36,14 @@ class Sequential():
         step = 0
 
         while step < (epoch * len(input_array)):
-            data_idx = step % mini_batch
-            _ = self.run(input_array[data_idx])
+            print('step', step)
+            data_idx = step % len(input_array)
+            res = self.run(input_array[data_idx])
+            # print('res, target', res, result_array[data_idx])
             self._backpropagate(result_array[data_idx])
 
             if (step + 1) % mini_batch == 0:
+                print('minibatch')
                 # +1 because of mod and step start with 0
                 for layer in self._layers:
                     layer.update_weight(momentum, learning_rate)
@@ -75,9 +79,11 @@ class Sequential():
     def _backpropagate(self, target_array: ndarray) -> None:
         predicted_array = self._input_array_list[-1]
         d_error_d_out = -(target_array - predicted_array)
+        print('outmost derrordout', d_error_d_out)
+        print(predicted_array, target_array)
+        print('mse', np.sum((target_array - predicted_array)**2))
 
         for layer, input_array, output_array in zip(self._layers[::-1], self._input_array_list[-2::-1], self._input_array_list[::-1]):
-            # delta_weight = d_error_d_out * d_out_d_net *
             d_error_d_out = layer.backpropagate(input_array, output_array, d_error_d_out)
 
         self._input_array_list = []
