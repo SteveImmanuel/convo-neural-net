@@ -1,6 +1,8 @@
 from enum import Enum
 from nptyping import ndarray
+
 import math
+import numpy as np
 
 
 class ActivationType(Enum):
@@ -12,11 +14,12 @@ class ActivationType(Enum):
 class Activation():
     @staticmethod
     def process(activation_type: ActivationType, value: int) -> int:
+        # print('before activation:', value)
         if activation_type == ActivationType.SIGMOID:
-            return 1 / (1 + math.exp(-value))
+            return 1 / (1 + np.exp(-value))
 
         if activation_type == ActivationType.RELU:
-            return max(0, value)
+            return np.maximum(0, value)
 
         return value
 
