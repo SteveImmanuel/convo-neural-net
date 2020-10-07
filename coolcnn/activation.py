@@ -29,6 +29,8 @@ class Activation():
             return value * (1 - value)
 
         if activation_type == ActivationType.RELU:
-            return np.maximum(np.zeros(value.shape), value)
+            # output = np.maximum(np.zeros(value.shape), value)
+            value[value > 0] = 1
+            return value
 
         return value
