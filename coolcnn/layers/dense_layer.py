@@ -15,7 +15,7 @@ class Dense(BaseLayer):
     def process(self, input_layer: ndarray) -> ndarray:
         out_layer = np.array([], dtype=float)
         for node_idx, weight in enumerate(self._weights):
-            calculated_value = np.sum(input_layer * weight) + self._bias[node_idx]
+            calculated_value = np.sum(input_layer * weight) + self._bias
             out_layer = np.append(out_layer, Activation.process(self._activator, calculated_value))
 
         return out_layer
@@ -30,7 +30,7 @@ class Dense(BaseLayer):
 
         self._bias = self._bias - learning_rate * self._bias_delta - momentum * self._prev_bias_delta
         self._prev_bias_delta = self._bias_delta
-        self._bias_delta = np.zeros(self.__n_nodes)
+        self._bias_delta = 0
 
     def backpropagate(self, input_layer: ndarray, output_layer: ndarray, d_error_d_out: ndarray) -> ndarray:
         # weight = (n_nodes, n_input)
@@ -44,19 +44,21 @@ class Dense(BaseLayer):
         d_error_d_weight = np.matmul(d_error_d_net.reshape(d_error_d_net.shape[0], 1), input_layer.reshape(1, input_layer.shape[0]))
 
         self._weights_delta += d_error_d_weight
-        self._bias_delta += d_error_d_net
+        self._bias_delta += np.sum(d_error_d_net)
 
         d_error_d_out_prev = np.matmul(d_error_d_net.reshape(1, d_error_d_net.shape[0]), self._weights)
         return d_error_d_out_prev.flatten()
 
     def _generate_weight(self):
-        self._weights = np.array([np.random.normal(scale=0.1, size=self._input_shape[-1]) for _ in range(self.__n_nodes)])
+        # self._weights = np.array([np.random.normal(scale=0.1, size=self._input_shape[-1]) for _ in range(self.__n_nodes)])
+        # self._weights = np.array([np.random.uniform(-0.5, 0.5, size=self._input_shape[-1]) for _ in range(self.__n_nodes)])
+        self._weights = np.random.uniform(-0.5, 0.5, size=(self.__n_nodes, self._input_shape[-1]))
         self._weights_delta = np.zeros(self._weights.shape)
         self._prev_weights_delta = np.zeros(self._weights.shape)
 
-        self._bias = np.random.normal(scale=0.1, size=self.__n_nodes)
-        self._bias_delta = np.zeros(self.__n_nodes)
-        self._prev_bias_delta = np.zeros(self.__n_nodes)
+        self._bias = 0
+        self._bias_delta = 0
+        self._prev_bias_delta = 0
 
     def _get_output_shape(self) -> Tuple:
         return (self.__n_nodes, )
