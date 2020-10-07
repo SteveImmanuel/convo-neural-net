@@ -43,9 +43,7 @@ class Convolutional(KernelLayer):
                 # print(d_error_d_net[output_row, output_col, idx])
                 # print(self._weights_delta.shape)
                 self._weights_delta[idx] += receptive_field * d_error_d_net[output_row, output_col, idx]
-
-        for idx in range(self._n_kernel):
-            self._bias_delta[idx] += np.sum(d_error_d_net[:, :, idx])
+                self._bias_delta[idx] += d_error_d_net[output_row, output_col, idx]
 
         return d_error_d_out_prev
 
