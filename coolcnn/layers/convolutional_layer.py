@@ -42,8 +42,10 @@ class Convolutional(KernelLayer):
                 # print(d_error_d_net[output_row, output_col, idx].shape)
                 # print(d_error_d_net[output_row, output_col, idx])
                 # print(self._weights_delta.shape)
-                self._weights_delta[idx, :, :, :] += receptive_field * d_error_d_net[output_row, output_col, idx]
-                self._bias_delta[idx] += np.sum(d_error_d_net[:, :, idx])
+                self._weights_delta[idx] += receptive_field * d_error_d_net[output_row, output_col, idx]
+
+        for idx in range(self._n_kernel):
+            self._bias_delta[idx] += np.sum(d_error_d_net[:, :, idx])
 
         return d_error_d_out_prev
 
@@ -81,15 +83,16 @@ class Convolutional(KernelLayer):
 
         total_filter_element = row * col * n_channel
         self._weights = np.array([], dtype=float)
-        for i in range(self._n_kernel):
-            random_weight = np.random.normal(scale=0.1, size=total_filter_element)
-            self._weights = np.concatenate((self._weights, random_weight))
+        # for i in range(self._n_kernel):
+        self._weights = np.random.uniform(-0.5, 0.5, size=(self._n_kernel, row, col, n_channel))
+        # self._weights = np.concatenate((self._weights, random_weight))
 
-        self._weights = np.reshape(self._weights, (self._n_kernel, row, col, n_channel))
+        # self._weights = np.reshape(self._weights, (self._n_kernel, row, col, n_channel))
         self._weights_delta = np.zeros(self._weights.shape)
         self._prev_weights_delta = np.zeros(self._weights.shape)
 
-        self._bias = np.random.rand(self._n_kernel)
+        # self._bias = np.random.rand(self._n_kernel)
+        self._bias = np.zeros(self._n_kernel)
         self._bias_delta = np.zeros(self._n_kernel)
         self._prev_bias_delta = np.zeros(self._n_kernel)
 
