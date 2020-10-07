@@ -26,22 +26,23 @@ class Pooling(KernelLayer):
             anchor_left = output_col * w_strides
             anchor_top = output_row * h_strides
 
-            for idx in range(self._n_kernel):
-                pool_idx = 0
-                value = 0
+            pool_idx = 0
+            value = 0
 
-                channel_matrix = receptive_field[:, :, idx]
-                if self.__mode == PoolMode.MAX:
-                    pool_idx = np.argmax(channel_matrix)
-                    pool_idx_top, pool_idx_left = np.unravel_index(pool_idx, self._kernel_shape)
-                    value = d_error_d_out[output_row][output_col][idx]
+            if self.__mode == PoolMode.MAX:
+                raveled_receptive_field = np.moveaxis(receptive_field, -1, 0).reshape(input_layer.shape[-1], -1)
+                pool_idx = np.argmax(raveled_receptive_field, axis=1)
 
-                    pool_idx_top += anchor_top
-                    pool_idx_left += anchor_left
-                else:
-                    raise RuntimeError('Backprop not implemented for average mode')
+                pool_idx_top, pool_idx_left = np.unravel_index(pool_idx, self._kernel_shape)
+                value = d_error_d_out[output_row][output_col]
 
-                d_error_d_out_prev[pool_idx_top][pool_idx_left][idx] += value
+                pool_idx_left += anchor_left
+                pool_idx_top += anchor_top
+                pool_idx = np.ravel_multi_index([pool_idx_top, pool_idx_left, np.arange(input_layer.shape[-1])], d_error_d_out_prev.shape)
+            else:
+                raise RuntimeError('Backprop not implemented for average mode')
+
+            np.put(d_error_d_out_prev, pool_idx, value)
 
         return d_error_d_out_prev
 
