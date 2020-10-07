@@ -13,12 +13,11 @@ class Dense(BaseLayer):
         self._activator = activator
 
     def process(self, input_layer: ndarray) -> ndarray:
-        out_layer_list = []
-        for node_idx, weight in enumerate(self._weights):
-            calculated_value = np.sum(input_layer * weight) + self._bias
-            out_layer_list.append(Activation.process(self._activator, calculated_value))
+        calculated_value = np.multiply(self._weights, input_layer)
+        summed_value = np.sum(calculated_value, axis=-1) + self._bias
+        out_array = Activation.process(self._activator, summed_value)
 
-        return np.array(out_layer_list)
+        return out_array
 
     def update_weight(self, momentum: float, learning_rate: float) -> None:
         # print('layer dense')
