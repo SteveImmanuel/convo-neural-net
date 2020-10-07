@@ -21,6 +21,9 @@ class Dense(BaseLayer):
         return out_layer
 
     def update_weight(self, momentum: float, learning_rate: float) -> None:
+        # print('layer dense')
+        # print('delta weight', self._weights_delta)
+        # print('delta bias', self._bias_delta)
         self._weights = self._weights - learning_rate * self._weights_delta - momentum * self._prev_weights_delta
         self._prev_weights_delta = self._weights_delta
         self._weights_delta = np.zeros(self._weights.shape)
@@ -32,7 +35,7 @@ class Dense(BaseLayer):
     def backpropagate(self, input_layer: ndarray, output_layer: ndarray, d_error_d_out: ndarray) -> ndarray:
         # weight = (n_nodes, n_input)
         # input_layer = (n_input, )
-        # next_d_error_d_out = (n_nodes, )
+        # d_error_d_out = (n_nodes, )
         # d_error_d_net = (n_nodes, )input_layer
         # out = (n_input, )
         # bias = (n_nodes, )
@@ -47,11 +50,11 @@ class Dense(BaseLayer):
         return d_error_d_out_prev.flatten()
 
     def _generate_weight(self):
-        self._weights = np.array([np.random.rand(self._input_shape[-1]) for _ in range(self.__n_nodes)])
+        self._weights = np.array([np.random.normal(scale=0.1, size=self._input_shape[-1]) for _ in range(self.__n_nodes)])
         self._weights_delta = np.zeros(self._weights.shape)
         self._prev_weights_delta = np.zeros(self._weights.shape)
 
-        self._bias = np.zeros(self.__n_nodes)
+        self._bias = np.random.normal(scale=0.1, size=self.__n_nodes)
         self._bias_delta = np.zeros(self.__n_nodes)
         self._prev_bias_delta = np.zeros(self.__n_nodes)
 
