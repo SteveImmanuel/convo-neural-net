@@ -3,96 +3,106 @@ from coolcnn.models import Sequential
 from coolcnn.activation import *
 
 from sklearn.model_selection import train_test_split
+from sklearn.model_selection import KFold
 
 from PIL import Image
 import os
 import numpy as np
 import random
-
-dataset_dir = 'tests/data/train'
-cat_dir = dataset_dir + '/cats'
-dog_dir = dataset_dir + '/dogs'
-cat_files = os.listdir(cat_dir)
-dog_files = os.listdir(dog_dir)
+import sys
 
 DOG_TARGET = 0
 CAT_TARGET = 1
 IMAGE_SIZE = 100
 
-total_data = len(cat_files) + len(dog_files)
+LEARNING_RATE = 0.0001
+EPOCH = 10
+BATCH_SIZE = 10
 
-# m_keras =
+RANDOM_STATE = 1
 
-# model = Sequential(
-#     [
-# Convolutional(n_kernel=5, kernel_shape=(3, 3), strides=1, padding=2, input_shape=(IMAGE_SIZE, IMAGE_SIZE, 3), activator=ActivationType.RELU),
-# Pooling(kernel_shape=(2, 2), strides=2),
-# Convolutional(n_kernel=10, kernel_shape=(3, 3), strides=2, padding=2, activator=ActivationType.RELU),
-# Pooling(kernel_shape=(3, 3), strides=2),
-# Flatten(),
-# Dense(n_nodes=50, activator=ActivationType.RELU, input_shape=(IMAGE_SIZE * IMAGE_SIZE * 3, )),
-# Dense(n_nodes=1, activator=ActivationType.SIGMOID),
 
-# Convolutional(n_kernel=32, kernel_shape=(3, 3), strides=1, padding=0, input_shape=(IMAGE_SIZE, IMAGE_SIZE, 3), activator=ActivationType.RELU),
-# Pooling(kernel_shape=(2, 2), strides=2),
-# Convolutional(n_kernel=64, kernel_shape=(3, 3), strides=2, padding=0, activator=ActivationType.RELU),
-# Pooling(kernel_shape=(2, 2), strides=2),
-# Convolutional(n_kernel=128, kernel_shape=(3, 3), strides=1, padding=0, activator=ActivationType.RELU),
-# Pooling(kernel_shape=(2, 2), strides=2),
-# Flatten(),
-# Dense(n_nodes=128, activator=ActivationType.SIGMOID, input_shape=(IMAGE_SIZE * IMAGE_SIZE * 3, )),
-# Dense(n_nodes=64, activator=ActivationType.SIGMOID),
-# Dense(n_nodes=32, activator=ActivationType.SIGMOID),
-# Dense(n_nodes=16, activator=ActivationType.SIGMOID),
-# Dense(n_nodes=8, activator=ActivationType.SIGMOID),
-# Dense(n_nodes=4, activator=ActivationType.SIGMOID),
-# Dense(n_nodes=2, activator=ActivationType.SIGMOID),
-# Dense(n_nodes=100, activator=ActivationType.RELU),
-# Dense(n_nodes=1, activator=ActivationType.SIGMOID),
-#     ]
-# )
+def count_score(model, test_input, test_target, data_name):
+    correct_classification = 0
 
-model = Sequential(
-    [
-        Convolutional(n_kernel=32, kernel_shape=(3, 3), strides=1, padding=2, input_shape=(IMAGE_SIZE, IMAGE_SIZE, 3), activator=ActivationType.RELU),
-        Pooling(kernel_shape=(2, 2), strides=2),
-        Flatten(),
-        Dense(n_nodes=1, activator=ActivationType.SIGMOID),
-    ]
-)
+    for input_entry, target_entry in zip(test_input, test_target):
+        result = model.run(input_entry)
+        correct_classification += result[0] == target_entry[0]
 
-model.compile()
-model.summary()
+    print('Accuracy with {}: {:.2f}'.format(data_name, correct_classification / len(validation_input)))
 
-input_array = []
-target_array = []
 
-for cat in cat_files:
-    path = os.path.join(cat_dir, cat)
+def process_image(path):
     image = Image.open(path).convert('RGB')
     image = image.resize((IMAGE_SIZE, IMAGE_SIZE))
     input_layer = np.array(image, dtype=np.float64) / 255.0
+    return input_layer
 
-    input_array.append(input_layer)
-    target_array.append(np.array([CAT_TARGET]))
 
-for dog in dog_files:
-    path = os.path.join(dog_dir, dog)
-    image = Image.open(path).convert('RGB')
-    image = image.resize((IMAGE_SIZE, IMAGE_SIZE))
-    input_layer = np.array(image, dtype=np.float64) / 255.0
+def load_dataset(root_path, target, input_array, target_array):
+    for item in os.listdir(root_path):
+        path = os.path.join(root_path, item)
 
-    input_array.append(input_layer)
-    target_array.append(np.array([DOG_TARGET]))
+        input_array.append(process_image(path))
+        target_array.append(np.array(target))
 
-train_input, validation_input, train_target, validation_target = train_test_split(input_array, target_array, test_size=0.1)
 
-model.fit(train_input, train_target, mini_batch=10, learning_rate=0.0001, epoch=100)
+if __name__ == '__main__':
+    dataset_dir = 'tests/data/train'
+    dataset_test_dir = 'tests/data/test'
 
-correct_classification = 0
+    cat_dir = os.path.join(dataset_dir, 'cats')
+    dog_dir = os.path.join(dataset_dir, 'dogs')
+    cat_test_dir = os.path.join(dataset_test_dir, 'cats')
+    dog_test_dir = os.path.join(dataset_test_dir, 'dogs')
 
-for input_entry, target_entry in zip(validation_input, validation_target):
-    result = model.run(input_entry)
-    correct_classification += result[0] == target_entry[0]
+    model = Sequential(
+        [
+            Convolutional(n_kernel=32, kernel_shape=(3, 3), strides=1, padding=2, input_shape=(IMAGE_SIZE, IMAGE_SIZE, 3), activator=ActivationType.RELU),
+            Pooling(kernel_shape=(2, 2), strides=2),
+            Flatten(),
+            Dense(n_nodes=1, activator=ActivationType.SIGMOID),
+        ]
+    )
 
-print('Accuracy with val data: {:.2f}'.format(correct_classification / len(validation_input)))
+    model.compile()
+    model.summary()
+
+    input_array = []
+    target_array = []
+
+    test_input_array = []
+    test_target_array = []
+
+    # Load train image
+    load_dataset(cat_dir, [CAT_TARGET], input_array, target_array)
+    load_dataset(dog_dir, [DOG_TARGET], input_array, target_array)
+
+    # Load test image
+    load_dataset(cat_test_dir, [CAT_TARGET], test_input_array, test_target_array)
+    load_dataset(dog_test_dir, [DOG_TARGET], test_input_array, test_target_array)
+
+    if sys.argv[-1] == '--crossval':
+        kf = KFold(n_splits=10, shuffle=True, random_state=RANDOM_STATE)
+        input_array = np.array(input_array)
+        target_array = np.array(target_array)
+        for train, validate in kf.split(input_array):
+            train_input = input_array[train]
+            train_target = target_array[train]
+            validate_input = input_array[validate]
+            validate_target = target_array[validate]
+
+            model.fit(train_input, train_target, mini_batch=BATCH_SIZE, learning_rate=LEARNING_RATE, epoch=EPOCH)
+
+            count_score(model, validate_input, validate_target, 'fold val data')
+
+        count_score(model, test_input_array, test_target_array, 'test data')
+
+    else:
+        train_input, validation_input, train_target, validation_target = train_test_split(input_array, target_array, test_size=0.1, random_state=RANDOM_STATE)
+
+        model.fit(train_input, train_target, mini_batch=BATCH_SIZE, learning_rate=LEARNING_RATE, epoch=EPOCH)
+
+        count_score(model, validate_input, validate_target, 'val data')
+
+        count_score(model, test_input_array, test_target_array, 'test data')
