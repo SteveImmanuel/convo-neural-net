@@ -40,7 +40,8 @@ class Dense(BaseLayer):
         # bias = (n_nodes, )
 
         d_error_d_net = Activation.differential(self._activator, output_layer) * d_error_d_out
-        d_error_d_weight = np.matmul(d_error_d_net.reshape(d_error_d_net.shape[0], 1), input_layer.reshape(1, input_layer.shape[0]))
+        d_error_d_weight = np.matmul(d_error_d_net.reshape(d_error_d_net.shape[0], 1),
+                                     input_layer.reshape(1, input_layer.shape[0]))
 
         self._weights_delta += d_error_d_weight
         self._bias_delta += np.sum(d_error_d_net)
@@ -49,7 +50,9 @@ class Dense(BaseLayer):
         return d_error_d_out_prev.flatten()
 
     def _generate_weight(self):
-        self._weights = np.random.normal(0, 0.08, size=(self.__n_nodes, self._input_shape[-1]))
+        # self._weights = np.random.normal(0, 0.08, size=(self.__n_nodes, self._input_shape[-1]))
+        self._weights = Activation.init_weight(self._activator, self._input_shape[-1], self.__n_nodes).reshape(
+            self.__n_nodes, self._input_shape[-1])
         self._weights_delta = np.zeros(self._weights.shape)
         self._prev_weights_delta = np.zeros(self._weights.shape)
 
@@ -58,7 +61,7 @@ class Dense(BaseLayer):
         self._prev_bias_delta = 0
 
     def _get_output_shape(self) -> Tuple:
-        return (self.__n_nodes, )
+        return (self.__n_nodes,)
 
     def _get_trainable_params(self) -> int:
         return (self._input_shape[0] + 1) * self.__n_nodes
