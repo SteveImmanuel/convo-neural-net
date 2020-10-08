@@ -1,6 +1,9 @@
+from __future__ import annotations
 from typing import List, Tuple
 from nptyping import ndarray
+
 import numpy as np
+import pickle
 
 from coolcnn.layers.base_layer import BaseLayer
 
@@ -56,11 +59,11 @@ class Sequential():
         total = 0
         for idx, layer in enumerate(self._layers):
             print('{:<5}{:<20}Output Shape: {:<20}Trainable Params: {:<20}'.format(
-                    str(idx + 1) + '.',
-                    type(layer).__name__,
-                    str(layer.output_shape),
-                    layer.trainable_params,
-                ))
+                str(idx + 1) + '.',
+                type(layer).__name__,
+                str(layer.output_shape),
+                layer.trainable_params,
+            ))
             total += layer.trainable_params
         print('=' * 92)
         print('Total trainable params:', total)
@@ -86,3 +89,12 @@ class Sequential():
             d_error_d_out = layer.backpropagate(input_array, output_array, d_error_d_out)
 
         self._input_array_list = []
+
+    def save(self, save_path: str) -> None:
+        with open(save_path, 'wb') as model_out:
+            pickle.dump(self, model_out)
+
+    @staticmethod
+    def load(save_path: str) -> Sequential:
+        with open(save_path, 'rb') as model_saved:
+            return pickle.load(model_saved)

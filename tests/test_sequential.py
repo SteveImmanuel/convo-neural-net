@@ -1,4 +1,7 @@
 import numpy as np
+import tempfile
+import os
+import uuid
 
 from coolcnn.activation import *
 from coolcnn.layers import *
@@ -97,3 +100,24 @@ def test_sequential_3():
     assert result.shape == (2, )
     assert result[0] == Activation.process(ActivationType.SIGMOID, 0)
     assert result[1] == Activation.process(ActivationType.SIGMOID, 1084 / 1000)
+
+def test_sequential_save_load():
+    model = Sequential(
+        [
+            Convolutional(
+                n_kernel=5, kernel_shape=2, strides=1, padding=1, input_shape=(25, 25, 3)
+            ),
+            Pooling(kernel_shape=(2, 2), strides=2),
+            Flatten(),
+            Dense(n_nodes=100),
+            Dense(n_nodes=1),
+        ]
+    )
+    model.compile()
+
+    temp_path = os.path.join(tempfile.gettempdir(), str(uuid.uuid4()))
+    model.save(temp_path)
+    model_2 = Sequential.load(temp_path)
+
+    assert np.all(model._layers[0].weight == model_2._layers[0].weight)
+
