@@ -63,7 +63,6 @@ if __name__ == '__main__':
     parser.add_argument('-l', '--load', action='store_true', help='Load stored model in default path (cnn.model)')
     parser.add_argument('-c', '--crossval', action='store_true', help='Perform 10 folds cross validation')
     args = parser.parse_args()
-    # print(args.accumulate(args.integers))
 
     dataset_dir = 'tests/data/train'
     dataset_test_dir = 'tests/data/test'
@@ -109,7 +108,7 @@ if __name__ == '__main__':
     load_dataset(cat_test_dir, [CAT_TARGET], test_input_array, test_target_array)
     load_dataset(dog_test_dir, [DOG_TARGET], test_input_array, test_target_array)
 
-    if args.crossval == '--crossval':
+    if args.crossval:
         kf = KFold(n_splits=10, shuffle=True, random_state=RANDOM_STATE)
         input_array = np.array(input_array)
         target_array = np.array(target_array)
