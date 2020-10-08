@@ -7,7 +7,7 @@ from typing import Tuple
 
 
 class Dense(BaseLayer):
-    def __init__(self, n_nodes=int, activator: ActivationType = ActivationType.SIGMOID, **kwargs):
+    def __init__(self, n_nodes: int, activator: ActivationType = ActivationType.SIGMOID, **kwargs):
         super().__init__(**kwargs)
         self.__n_nodes = n_nodes
         self._activator = activator
@@ -61,7 +61,8 @@ class Dense(BaseLayer):
         self._prev_bias_delta = 0
 
     def _get_output_shape(self) -> Tuple:
-        return (self.__n_nodes, )
+        return 1, self.__n_nodes
 
     def _get_trainable_params(self) -> int:
-        return (self._input_shape[0] + 1) * self.__n_nodes
+        return (self._input_shape[-1] + 1) * self.__n_nodes
+
