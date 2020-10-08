@@ -4,6 +4,7 @@ from coolcnn.activation import *
 
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import KFold
+from sklearn.metrics import confusion_matrix
 
 from PIL import Image
 import os
@@ -17,19 +18,27 @@ IMAGE_SIZE = 100
 
 LEARNING_RATE = 0.0001
 EPOCH = 10
-BATCH_SIZE = 10
+BATCH_SIZE = 5
 
 RANDOM_STATE = 1
 
 
 def count_score(model, test_input, test_target, data_name):
     correct_classification = 0
+    test_result = []
 
     for input_entry, target_entry in zip(test_input, test_target):
         result = model.run(input_entry)
-        correct_classification += result[0] == target_entry[0]
+        result = 1 if result[0] > 0.5 else 0
+        test_result.append(result)
+        correct_classification += result == target_entry[0]
 
-    print('Accuracy with {}: {:.2f}'.format(data_name, correct_classification / len(validation_input)))
+    print('Accuracy with {}: {:.2f}'.format(data_name, correct_classification / len(test_target)))
+    print('Confusion matrix: ')
+    # print(test_target)
+    # print(test_result)
+    print(confusion_matrix(test_target, test_result))
+    print()
 
 
 def process_image(path):
@@ -103,6 +112,6 @@ if __name__ == '__main__':
 
         model.fit(train_input, train_target, mini_batch=BATCH_SIZE, learning_rate=LEARNING_RATE, epoch=EPOCH)
 
-        count_score(model, validate_input, validate_target, 'val data')
+        count_score(model, validation_input, validation_target, 'val data')
 
         count_score(model, test_input_array, test_target_array, 'test data')
