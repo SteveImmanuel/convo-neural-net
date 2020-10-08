@@ -1,6 +1,9 @@
+from __future__ import annotations
 from typing import List, Tuple
 from nptyping import ndarray
+
 import numpy as np
+import pickle
 
 from coolcnn.layers.base_layer import BaseLayer
 
@@ -36,7 +39,7 @@ class Sequential():
         step = 0
 
         while step < (epoch * len(input_array)):
-            print('step', step)
+            print('Step', step, ':', end=' ')
             data_idx = step % len(input_array)
             res = self.run(input_array[data_idx])
             # print('res, target', res, result_array[data_idx])
@@ -79,11 +82,19 @@ class Sequential():
     def _backpropagate(self, target_array: ndarray) -> None:
         predicted_array = self._input_array_list[-1]
         d_error_d_out = -(target_array - predicted_array)
-        print('outmost derrordout', d_error_d_out)
         print(predicted_array, target_array)
-        print('mse', np.sum((target_array - predicted_array)**2))
+        # print('mse', np.sum((target_array - predicted_array)**2))
 
         for layer, input_array, output_array in zip(self._layers[::-1], self._input_array_list[-2::-1], self._input_array_list[::-1]):
             d_error_d_out = layer.backpropagate(input_array, output_array, d_error_d_out)
 
         self._input_array_list = []
+
+    def save(self, save_path: str) -> None:
+        with open(save_path, 'wb') as model_out:
+            pickle.dump(self, model_out)
+
+    @staticmethod
+    def load(save_path: str) -> Sequential:
+        with open(save_path, 'rb') as model_saved:
+            return pickle.load(model_saved)

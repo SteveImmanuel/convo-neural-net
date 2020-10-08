@@ -67,7 +67,7 @@ class Convolutional(KernelLayer):
         output_col: int,
     ) -> None:
         summed_receptive_field = np.sum(self._weights * receptive_field, axis=(1, 2, 3)) + self._bias
-        feature_map[output_row][output_col] = Activation.process(self._activator, summed_receptive_field)
+        return Activation.process(self._activator, summed_receptive_field), output_row, output_col
 
     def _generate_weight(self):
         n_channel = self._input_shape[-1]
@@ -75,15 +75,11 @@ class Convolutional(KernelLayer):
 
         total_filter_element = row * col * n_channel
         self._weights = np.array([], dtype=float)
-        # for i in range(self._n_kernel):
         self._weights = np.random.normal(0, 0.08, size=(self._n_kernel, row, col, n_channel))
-        # self._weights = np.concatenate((self._weights, random_weight))
 
-        # self._weights = np.reshape(self._weights, (self._n_kernel, row, col, n_channel))
         self._weights_delta = np.zeros(self._weights.shape)
         self._prev_weights_delta = np.zeros(self._weights.shape)
 
-        # self._bias = np.random.rand(self._n_kernel)
         self._bias = np.zeros(self._n_kernel)
         self._bias_delta = np.zeros(self._n_kernel)
         self._prev_bias_delta = np.zeros(self._n_kernel)

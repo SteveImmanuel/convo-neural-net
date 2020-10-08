@@ -1,11 +1,12 @@
+import numpy as np
+
 from abc import abstractmethod
 from typing import List, Tuple, Union
-
-import numpy as np
 from nptyping import ndarray
+from coolcnn.worker import Worker
+import time
 
 from coolcnn.layers.base_layer import BaseLayer
-
 
 class KernelLayer(BaseLayer):
     def __init__(self, n_kernel: int, kernel_shape: Union[int, Tuple[int, int]], strides: Union[int, Tuple[int, int]] = (1, 1), padding: int = 0, **kwargs) -> None:
@@ -34,10 +35,17 @@ class KernelLayer(BaseLayer):
         row_size, col_size, _ = self.output_shape
 
         feature_map = np.zeros((row_size, col_size, self._n_kernel))
-
+        parameters = []
+        
         for receptive_field, output_row, output_col in self._gen_receptive_field(input_layer):
-            self._on_receptive_field(receptive_field, feature_map, output_row, output_col)
+            parameters.append((receptive_field, feature_map, output_row, output_col))
 
+        # with Pool(cpu_count()) as pool:
+        result = Worker.get_instance().pool.starmap(self._on_receptive_field, parameters)
+            
+        for item in result:
+            feature_map[item[1]][item[2]]=item[0]
+        
         return feature_map
 
     def _gen_receptive_field(self, input_layer: ndarray):
