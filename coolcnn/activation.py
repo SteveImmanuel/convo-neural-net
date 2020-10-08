@@ -16,7 +16,7 @@ class Activation():
     def process(activation_type: ActivationType, value: int) -> int:
         # print('before activation:', value)
         if activation_type == ActivationType.SIGMOID:
-            return 1 / (1 + np.exp(-value))
+            return 1 / (1 + np.exp(-1 * value))
 
         if activation_type == ActivationType.RELU:
             return np.maximum(0, value)
@@ -34,3 +34,13 @@ class Activation():
             return value
 
         return value
+
+    @staticmethod
+    def init_weight(activation_type: ActivationType, fan_in: int, fan_out: int) -> ndarray:
+        if activation_type == ActivationType.SIGMOID:
+            return np.random.uniform(-1, 1, size=(fan_in, fan_out)) * math.sqrt(6. / (fan_in + fan_out))
+
+        if activation_type == ActivationType.RELU:
+            return np.random.normal(0, 1, size=(fan_in, fan_out)) * math.sqrt(2. / fan_in)
+
+        return np.random.normal(0, 0.08, size=(fan_in, fan_out))
