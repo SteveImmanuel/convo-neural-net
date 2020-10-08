@@ -11,7 +11,7 @@ class Flatten(BaseLayer):
         super().__init__(**kwargs)
 
     def process(self, input_layer: ndarray) -> ndarray:
-        return input_layer.flatten()
+        return input_layer.reshape(1, input_layer.size)
 
     def backpropagate(self, input_layer: ndarray, output_layer: ndarray, d_error_d_out: ndarray) -> ndarray:
         return d_error_d_out.reshape(input_layer.shape)

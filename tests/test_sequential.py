@@ -48,7 +48,8 @@ def test_sequential_2():
     model.compile()
     model.summary()
     result = model.run(input_layer)
-    assert result.shape == (1, )
+    print(result)
+    assert result.shape == (1, 1)
 
 
 def test_sequential_3():
@@ -94,12 +95,14 @@ def test_sequential_3():
     )
     conv_layer_1._bias = np.zeros((2, ))
 
-    dense_layer_1._weights = np.array([[0, 2], [0.001, 0]])
+    # dense_layer_1._weights = np.array([[0, 2], [0.001, 0]])
+    dense_layer_1._weights = np.array([[0, 0.001], [2, 0]])
 
     result = model.run(input_layer)
-    assert result.shape == (2, )
-    assert result[0] == Activation.process(ActivationType.SIGMOID, 0)
-    assert result[1] == Activation.process(ActivationType.SIGMOID, 1084 / 1000)
+
+    assert result.shape == (1, 2)
+    assert result[0][0] == Activation.process(ActivationType.SIGMOID, 0)
+    assert result[0][1] == Activation.process(ActivationType.SIGMOID, 1084 / 1000)
 
 def test_sequential_save_load():
     model = Sequential(
