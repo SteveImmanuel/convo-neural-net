@@ -44,7 +44,7 @@ class Sequential():
         mse = 0.
         acc = 0.
 
-        start_time = time.time()
+        # start_time = time.time()
         start = datetime.now()
         while step < (epoch * len(input_array)):
             # print('Step', step, ':', end=' ')
@@ -58,7 +58,7 @@ class Sequential():
             data_idx = step % len(input_array)
             res = self.run(input_array[data_idx]).copy()
 
-            mse += np.sum((result_array - res)**2)
+            mse += np.sum((result_array[data_idx] - res)**2)
             res[res < 0.5] = 0
             res[res >= 0.5] = 1
             acc += np.sum(res == result_array[data_idx])
@@ -71,12 +71,12 @@ class Sequential():
                     layer.update_weight(momentum, learning_rate)
 
             if step % len(input_array) == 0 and step != 0:
-                print(
-                    '{}/{} epoch in {:.2f}s'.format(
-                        (step + 1) // len(input_array), epoch,
-                        time.time() - start_time
-                    )
-                )
+                # print(
+                #     '{}/{} epoch in {:.2f}s'.format(
+                #         (step + 1) // len(input_array), epoch,
+                #         time.time() - start_time
+                #     )
+                # )
                 start_time = time.time()
                 # one epoch
                 print()
