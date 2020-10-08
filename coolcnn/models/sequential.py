@@ -84,7 +84,7 @@ class Sequential():
             # epoch end reached
             if (step + 1) % len(input_array) == 0:
                 print('Epoch', step // len(input_array) + 1)
-                print('Elapsed:', '{:.3f}'.format(time.time()) - start, 's')
+                print('Elapsed:', '{:.3f}'.format(time.time() - start), 's')
                 print(
                     'MSE:', '{:.4f}'.format(mse / len(input_array)), 
                     'Acc:', '{:.4f}'.format(acc / len(input_array))

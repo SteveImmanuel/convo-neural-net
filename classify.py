@@ -20,6 +20,7 @@ IMAGE_SIZE = 100
 LEARNING_RATE = 0.0005
 EPOCH = 10
 BATCH_SIZE = 32
+MOMENTUM = 0.01
 
 RANDOM_STATE = 1
 
@@ -123,7 +124,8 @@ if __name__ == '__main__':
                 train_target,
                 mini_batch=BATCH_SIZE,
                 learning_rate=LEARNING_RATE,
-                epoch=EPOCH
+                epoch=EPOCH,
+                momentum=MOMENTUM
             )
 
             count_score(model, validate_input, validate_target, 'fold val data')
@@ -142,7 +144,8 @@ if __name__ == '__main__':
             train_target,
             mini_batch=BATCH_SIZE,
             learning_rate=LEARNING_RATE,
-            epoch=EPOCH
+            epoch=EPOCH,
+            momentum=MOMENTUM
         )
 
         count_score(model, validation_input, validation_target, 'val data')
