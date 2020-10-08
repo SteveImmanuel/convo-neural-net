@@ -266,4 +266,4 @@ dmypy.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python,linux,pycharm,code
 
-tests/sample
+tests/data
