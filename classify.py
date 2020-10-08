@@ -22,6 +22,8 @@ BATCH_SIZE = 5
 
 RANDOM_STATE = 1
 
+MODEL_SAVE_PATH = 'cnn.model'
+
 
 def count_score(model, test_input, test_target, data_name):
     correct_classification = 0
@@ -107,6 +109,8 @@ if __name__ == '__main__':
 
         count_score(model, test_input_array, test_target_array, 'test data')
 
+        model.save(MODEL_SAVE_PATH)
+
     else:
         train_input, validation_input, train_target, validation_target = train_test_split(input_array, target_array, test_size=0.1, random_state=RANDOM_STATE)
 
@@ -115,3 +119,5 @@ if __name__ == '__main__':
         count_score(model, validation_input, validation_target, 'val data')
 
         count_score(model, test_input_array, test_target_array, 'test data')
+
+        model.save(MODEL_SAVE_PATH)
