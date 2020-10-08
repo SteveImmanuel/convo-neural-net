@@ -3,8 +3,7 @@ import numpy as np
 from abc import abstractmethod
 from typing import List, Tuple, Union
 from nptyping import ndarray
-from multiprocessing.pool import Pool
-from multiprocessing import cpu_count
+from coolcnn.worker import Worker
 import time
 
 from coolcnn.layers.base_layer import BaseLayer
@@ -41,8 +40,8 @@ class KernelLayer(BaseLayer):
         for receptive_field, output_row, output_col in self._gen_receptive_field(input_layer):
             parameters.append((receptive_field, feature_map, output_row, output_col))
 
-        with Pool(cpu_count()) as pool:
-            result = pool.starmap(self._on_receptive_field, parameters)
+        # with Pool(cpu_count()) as pool:
+        result = Worker.get_instance().pool.starmap(self._on_receptive_field, parameters)
             
         for item in result:
             feature_map[item[1]][item[2]]=item[0]
