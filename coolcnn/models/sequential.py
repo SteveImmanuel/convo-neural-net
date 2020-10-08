@@ -70,7 +70,7 @@ class Sequential():
                 for layer in self._layers:
                     layer.update_weight(momentum, learning_rate)
 
-            if step % len(input_array) == 0 and step != 0:
+            if (step + 1) % len(input_array) == 0:
                 # print(
                 #     '{}/{} epoch in {:.2f}s'.format(
                 #         (step + 1) // len(input_array), epoch,
