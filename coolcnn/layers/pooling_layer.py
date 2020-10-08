@@ -53,14 +53,26 @@ class Pooling(KernelLayer):
         output_row: int,
         output_col: int,
     ) -> None:
-        for idx in range(self._n_kernel):
-            value = 0
-            channel_matrix = receptive_field[:, :, idx]
-            if self.__mode == PoolMode.MAX:
-                value = channel_matrix.max()
-            else:
-                value = channel_matrix.mean()
-            feature_map[output_row][output_col][idx] = value
+        # for idx in range(self._n_kernel):
+        #     value = 0
+        #     channel_matrix = receptive_field[:, :, idx]
+        #     if self.__mode == PoolMode.MAX:
+        #         value = channel_matrix.max()
+        #     else:
+        #         value = channel_matrix.mean()
+        #     feature_map[output_row][output_col][idx] = value
+        
+        if self.__mode == PoolMode.MAX:
+            value = np.max(receptive_field, axis=(0,1))
+        else:
+            value = np.mean(receptive_field, axis=(0,1))
+
+        # print(receptive_field)
+        # print(feature_map[output_row][output_col].shape)
+        # feature_map[output_row][output_col][idx] = value
+        # print(feature_map.shape)
+        return value, output_row, output_col
+        
 
     def _generate_weight(self):
         self._n_kernel = self._input_shape[-1]
