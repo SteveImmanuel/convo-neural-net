@@ -49,9 +49,7 @@ class Dense(BaseLayer):
         return d_error_d_out_prev.flatten()
 
     def _generate_weight(self):
-        # self._weights = np.array([np.random.normal(scale=0.1, size=self._input_shape[-1]) for _ in range(self.__n_nodes)])
-        # self._weights = np.array([np.random.uniform(-0.5, 0.5, size=self._input_shape[-1]) for _ in range(self.__n_nodes)])
-        self._weights = np.random.uniform(-0.5, 0.5, size=(self.__n_nodes, self._input_shape[-1]))
+        self._weights = np.random.normal(0, 0.08, size=(self.__n_nodes, self._input_shape[-1]))
         self._weights_delta = np.zeros(self._weights.shape)
         self._prev_weights_delta = np.zeros(self._weights.shape)
 
