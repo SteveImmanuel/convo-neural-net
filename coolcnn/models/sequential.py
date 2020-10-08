@@ -4,6 +4,7 @@ from nptyping import ndarray
 
 import numpy as np
 import pickle
+import time
 
 from coolcnn.layers.base_layer import BaseLayer
 
@@ -38,8 +39,10 @@ class Sequential():
 
         step = 0
 
+        start_time = time.time()
+
         while step < (epoch * len(input_array)):
-            print('Step', step, ':', end=' ')
+            print('Step', step + 1, ':', end=' ')
             data_idx = step % len(input_array)
             res = self.run(input_array[data_idx])
             # print('res, target', res, result_array[data_idx])
@@ -50,6 +53,11 @@ class Sequential():
                 # +1 because of mod and step start with 0
                 for layer in self._layers:
                     layer.update_weight(momentum, learning_rate)
+
+            if step % len(input_array) == 0 and step != 0:
+                print('{}/{} epoch in {:.2f}s'.format((step + 1) // len(input_array), epoch, time.time() - start_time))
+                start_time = time.time()
+
             step += 1
 
     def summary(self):
