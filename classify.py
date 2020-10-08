@@ -5,20 +5,21 @@ from coolcnn.activation import *
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import KFold
 from sklearn.metrics import confusion_matrix
-
 from PIL import Image
+
 import os
 import numpy as np
 import random
 import sys
+import argparse
 
 DOG_TARGET = 0
 CAT_TARGET = 1
 IMAGE_SIZE = 100
 
-LEARNING_RATE = 0.0001
+LEARNING_RATE = 0.0005
 EPOCH = 10
-BATCH_SIZE = 5
+BATCH_SIZE = 32
 
 RANDOM_STATE = 1
 
@@ -37,8 +38,6 @@ def count_score(model, test_input, test_target, data_name):
 
     print('Accuracy with {}: {:.2f}'.format(data_name, correct_classification / len(test_target)))
     print('Confusion matrix: ')
-    # print(test_target)
-    # print(test_result)
     print(confusion_matrix(test_target, test_result))
     print()
 
@@ -59,6 +58,12 @@ def load_dataset(root_path, target, input_array, target_array):
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Perform cat dog classification')
+    parser.add_argument('-l', '--load', action='store_true', help='Load stored model in default path (cnn.model)')
+    parser.add_argument('-c', '--crossval', action='store_true', help='Perform 10 folds cross validation')
+    args = parser.parse_args()
+    # print(args.accumulate(args.integers))
+
     dataset_dir = 'tests/data/train'
     dataset_test_dir = 'tests/data/test'
 
@@ -67,16 +72,26 @@ if __name__ == '__main__':
     cat_test_dir = os.path.join(dataset_test_dir, 'cats')
     dog_test_dir = os.path.join(dataset_test_dir, 'dogs')
 
-    model = Sequential(
-        [
-            Convolutional(n_kernel=32, kernel_shape=(3, 3), strides=1, padding=2, input_shape=(IMAGE_SIZE, IMAGE_SIZE, 3), activator=ActivationType.RELU),
-            Pooling(kernel_shape=(2, 2), strides=2),
-            Flatten(),
-            Dense(n_nodes=1, activator=ActivationType.SIGMOID),
-        ]
-    )
+    if args.load:
+        model = Sequential.load(MODEL_SAVE_PATH)
+    else:
+        model = Sequential(
+            [
+                Convolutional(
+                    n_kernel=32,
+                    kernel_shape=(3, 3),
+                    strides=1,
+                    padding=2,
+                    input_shape=(IMAGE_SIZE, IMAGE_SIZE, 3),
+                    activator=ActivationType.RELU
+                ),
+                Pooling(kernel_shape=(2, 2), strides=2),
+                Flatten(),
+                Dense(n_nodes=1, activator=ActivationType.SIGMOID),
+            ]
+        )
+        model.compile()
 
-    model.compile()
     model.summary()
 
     input_array = []
@@ -93,7 +108,7 @@ if __name__ == '__main__':
     load_dataset(cat_test_dir, [CAT_TARGET], test_input_array, test_target_array)
     load_dataset(dog_test_dir, [DOG_TARGET], test_input_array, test_target_array)
 
-    if sys.argv[-1] == '--crossval':
+    if args.crossval == '--crossval':
         kf = KFold(n_splits=10, shuffle=True, random_state=RANDOM_STATE)
         input_array = np.array(input_array)
         target_array = np.array(target_array)
@@ -103,7 +118,13 @@ if __name__ == '__main__':
             validate_input = input_array[validate]
             validate_target = target_array[validate]
 
-            model.fit(train_input, train_target, mini_batch=BATCH_SIZE, learning_rate=LEARNING_RATE, epoch=EPOCH)
+            model.fit(
+                train_input,
+                train_target,
+                mini_batch=BATCH_SIZE,
+                learning_rate=LEARNING_RATE,
+                epoch=EPOCH
+            )
 
             count_score(model, validate_input, validate_target, 'fold val data')
 
@@ -112,9 +133,17 @@ if __name__ == '__main__':
         model.save(MODEL_SAVE_PATH)
 
     else:
-        train_input, validation_input, train_target, validation_target = train_test_split(input_array, target_array, test_size=0.1, random_state=RANDOM_STATE)
+        train_input, validation_input, train_target, validation_target = train_test_split(
+            input_array, target_array, test_size=0.1, random_state=RANDOM_STATE
+        )
 
-        model.fit(train_input, train_target, mini_batch=BATCH_SIZE, learning_rate=LEARNING_RATE, epoch=EPOCH)
+        model.fit(
+            train_input,
+            train_target,
+            mini_batch=BATCH_SIZE,
+            learning_rate=LEARNING_RATE,
+            epoch=EPOCH
+        )
 
         count_score(model, validation_input, validation_target, 'val data')
 
