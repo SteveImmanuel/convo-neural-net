@@ -13,7 +13,6 @@ class Dense(BaseLayer):
         self._activator = activator
 
     def process(self, input_layer: ndarray) -> ndarray:
-        print('pass')
         calculated_value = input_layer @ self._weights + self._bias
         out_array = Activation.process(self._activator, calculated_value)
         return out_array
@@ -65,4 +64,3 @@ class Dense(BaseLayer):
 
     def _get_trainable_params(self) -> int:
         return (self._input_shape[-1] + 1) * self.__n_nodes
-
